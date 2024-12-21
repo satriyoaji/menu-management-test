@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { deleteMenu, selectMenu } from '../store/menuSlice';
