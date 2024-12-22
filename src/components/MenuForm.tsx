@@ -27,13 +27,13 @@ const MenuForm: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="mb-4">
       <input
         type="text"
         value={name}
         onChange={e => setName(e.target.value)}
         placeholder="Menu Name"
-        className="border rounded p-2"
+        className="border rounded p-2 mr-2"
       />
       <button type="submit" className="bg-blue-500 text-white rounded p-2">
         Save

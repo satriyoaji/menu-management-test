@@ -21,10 +21,36 @@ const MenusPage: React.FC = () => {
     fetchMenus();
   }, [dispatch]);
 
+  const expandAll = () => {
+    console.log('Expand All functionality triggered');
+    // Additional logic to expand all menus
+  };
+
+  const collapseAll = () => {
+    console.log('Collapse All functionality triggered');
+    // Additional logic to collapse all menus
+  };
+
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold">Menus</h1>
-      <MenuForm />
+      <h1 className="text-2xl font-bold mb-4">Menus</h1>
+      <div className="mb-4 flex justify-between items-center">
+        <MenuForm />
+        <div>
+          <button
+            onClick={expandAll}
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2"
+          >
+            Expand All
+          </button>
+          <button
+            onClick={collapseAll}
+            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+          >
+            Collapse All
+          </button>
+        </div>
+      </div>
       <MenuTree menus={menus} />
     </div>
   );

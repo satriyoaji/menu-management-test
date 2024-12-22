@@ -1,4 +1,6 @@
-// src/app/layout.tsx
+
+'use client';
+
 import './globals.css';
 import { store } from '../store/store';
 import { Provider } from 'react-redux';
@@ -14,22 +16,11 @@ import { Provider } from 'react-redux';
 //   weight: "100 900",
 // });
 
-export const metadata = {
-  title: 'Menu Management',
-  description: 'Manage hierarchical menus',
-};
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>
-        <Provider store={store}>
-          {children}
-        </Provider>
+        <Provider store={store}>{children}</Provider>
       </body>
     </html>
   );
