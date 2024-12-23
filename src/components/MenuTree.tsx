@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useImperativeHandle, forwardRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { addMenu, deleteMenu, selectMenu } from '../store/menuSlice';
 
@@ -17,20 +17,12 @@ interface MenuTreeProps {
   depth?: number;
 }
 
-const MenuTree: React.FC<MenuTreeProps> = ({ menus, parentId = null, depth = 0 }) => {
+const MenuTree = forwardRef((props: MenuTreeProps, ref) => {
+  const { menus, parentId = null, depth = 0 } = props;
   const dispatch = useDispatch();
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
 
-  const handleAddMenu = (parentId: string | null, depth: number) => {
-    const newMenu = {
-      id: Date.now().toString(),
-      name: 'New Menu',
-      parentId,
-      depth: depth + 1,
-    };
-    dispatch(addMenu(newMenu));
-  };
-
+  // Toggle Expand/Collapse for individual menu
   const toggleExpand = (menuId: string) => {
     setExpandedItems(prev => ({
       ...prev,
@@ -44,16 +36,36 @@ const MenuTree: React.FC<MenuTreeProps> = ({ menus, parentId = null, depth = 0 }
     return menus.filter(menu => menu.parentId === parentId);
   };
 
+  // Expand All Menus
+  const expandAllMenus = () => {
+    const expandAllRecursive = (menuList: Menu[]) => {
+      menuList.forEach(menu => {
+        setExpandedItems(prev => ({ ...prev, [menu.id]: true }));
+        const children = getChildMenus(menu.id);
+        if (children.length > 0) {
+          expandAllRecursive(children);
+        }
+      });
+    };
+    expandAllRecursive(menus);
+  };
+
+  // Collapse All Menus
+  const collapseAllMenus = () => {
+    setExpandedItems({});
+  };
+
+  // Expose functions to parent via ref
+  useImperativeHandle(ref, () => ({
+    expandAllMenus,
+    collapseAllMenus,
+  }));
+
   return (
     <ul className={`relative pl-4 border-l border-gray-300`}>
       {getChildMenus(parentId).map(menu => (
         <li key={menu.id} className="relative pb-2">
-          {/* Connecting Line */}
           <div className="flex items-center">
-            <span
-              className={`absolute left-[-1.5rem] h-full border-l border-gray-300`}
-              aria-hidden="true"
-            ></span>
             {getChildMenus(menu.id).length > 0 && (
               <button
                 onClick={() => toggleExpand(menu.id)}
@@ -62,14 +74,12 @@ const MenuTree: React.FC<MenuTreeProps> = ({ menus, parentId = null, depth = 0 }
                 {isExpanded(menu.id) ? '▼' : '►'}
               </button>
             )}
-            <div
-              className="flex-1 flex items-center justify-between group hover:bg-gray-100 p-2 rounded"
-            >
+            <div className="flex-1 flex items-center justify-between group hover:bg-gray-100 p-2 rounded">
               <span>{menu.name}</span>
               <div className="flex items-center space-x-2">
                 <button
                   className="hidden group-hover:block text-blue-500"
-                  onClick={() => handleAddMenu(menu.id, menu.depth)}
+                  onClick={() => dispatch(addMenu({ id: Date.now().toString(), name: 'New Menu', parentId: menu.id, depth: depth + 1 }))}
                 >
                   +
                 </button>
@@ -85,6 +95,8 @@ const MenuTree: React.FC<MenuTreeProps> = ({ menus, parentId = null, depth = 0 }
       ))}
     </ul>
   );
-};
+});
+
+MenuTree.displayName = 'MenuTree';
 
 export default MenuTree;

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setMenus } from '../../store/menuSlice';
 import MenuTree from '../../components/MenuTree';
@@ -10,6 +10,8 @@ import { RootState } from '../../store/store';
 const MenusPage: React.FC = () => {
   const dispatch = useDispatch();
   const menus = useSelector((state: RootState) => state.menu.menus);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const menuTreeRef = useRef<any>(null);
 
   useEffect(() => {
     const fetchMenus = async () => {
@@ -22,13 +24,15 @@ const MenusPage: React.FC = () => {
   }, [dispatch]);
 
   const expandAll = () => {
-    console.log('Expand All functionality triggered');
-    // Additional logic to expand all menus
+    if (menuTreeRef.current) {
+      menuTreeRef.current.expandAllMenus();
+    }
   };
 
   const collapseAll = () => {
-    console.log('Collapse All functionality triggered');
-    // Additional logic to collapse all menus
+    if (menuTreeRef.current) {
+      menuTreeRef.current.collapseAllMenus();
+    }
   };
 
   return (
@@ -51,7 +55,7 @@ const MenusPage: React.FC = () => {
           </button>
         </div>
       </div>
-      <MenuTree menus={menus} />
+      <MenuTree ref={menuTreeRef} menus={menus} />
     </div>
   );
 };
